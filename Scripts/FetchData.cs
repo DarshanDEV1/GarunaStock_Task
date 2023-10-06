@@ -15,7 +15,7 @@ public class FetchData : MonoBehaviour
 
     [SerializeField] private List<GameObject> _stockList;
 
-    [SerializeField] private string _json_url = "https://raw.githubusercontent.com/VedprakashSaidarshanSahoo/Hostings/main/stocks.json";
+    [SerializeField] private string _json_url;
 
     void Start()
     {
@@ -38,6 +38,15 @@ public class FetchData : MonoBehaviour
 
     void GetStockList()
     {
+#if UNITY_EDITOR
+    _json_url = "http://localhost:3000/api/stocks";
+#elif UNITY_ANDROID
+    _json_url = "https://raw.githubusercontent.com/DarshanDEV1/GarunaStock_Task/master/NodeJS/StockAPI/stocks%20vr%20api/stocks.json";
+#elif UNITY_IOS
+    _json_url = "https://raw.githubusercontent.com/DarshanDEV1/GarunaStock_Task/master/NodeJS/StockAPI/stocks%20vr%20api/stocks.json";
+#else
+    _json_url = "http://localhost:3000/api/stocks";
+#endif
         //StartCoroutine(GetList("http://localhost:3000/api/stocks"));
         StartCoroutine(GetList(_json_url));
     }
