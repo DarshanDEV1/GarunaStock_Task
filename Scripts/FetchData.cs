@@ -15,6 +15,8 @@ public class FetchData : MonoBehaviour
 
     [SerializeField] private List<GameObject> _stockList;
 
+    [SerializeField] private string _json_url = "https://raw.githubusercontent.com/VedprakashSaidarshanSahoo/Hostings/main/stocks.json";
+
     void Start()
     {
         // Add a click listener to the search button
@@ -36,7 +38,8 @@ public class FetchData : MonoBehaviour
 
     void GetStockList()
     {
-        StartCoroutine(GetList("http://localhost:3000/api/stocks"));
+        //StartCoroutine(GetList("http://localhost:3000/api/stocks"));
+        StartCoroutine(GetList(_json_url));
     }
 
     IEnumerator GetList(string uri)
