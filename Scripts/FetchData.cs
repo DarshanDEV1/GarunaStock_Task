@@ -27,7 +27,8 @@ public class FetchData : MonoBehaviour
                 Destroy(stock);
             }
             _stockList.Clear();
-            GetStockList();
+            //GetStockList();
+            SearchStock();
         });
 
         _clearButton.onClick.AddListener(() =>
@@ -38,16 +39,14 @@ public class FetchData : MonoBehaviour
 
     void GetStockList()
     {
-#if UNITY_EDITOR
-    _json_url = "http://localhost:3000/api/stocks";
-#elif UNITY_ANDROID
-    _json_url = "https://raw.githubusercontent.com/DarshanDEV1/GarunaStock_Task/master/NodeJS/StockAPI/stocks%20vr%20api/stocks.json";
-#elif UNITY_IOS
-    _json_url = "https://raw.githubusercontent.com/DarshanDEV1/GarunaStock_Task/master/NodeJS/StockAPI/stocks%20vr%20api/stocks.json";
-#else
-    _json_url = "http://localhost:3000/api/stocks";
-#endif
-        //StartCoroutine(GetList("http://localhost:3000/api/stocks"));
+        _json_url = "http://localhost:3000/api/stocks";
+        StartCoroutine(GetList(_json_url));
+    }
+
+    void SearchStock()
+    {
+        string symbol = _searchInput.text;
+        _json_url = $"http://localhost:3000/api/stocks/search?symbol={symbol}";
         StartCoroutine(GetList(_json_url));
     }
 
@@ -63,28 +62,28 @@ public class FetchData : MonoBehaviour
             }
             else
             {
+                // Add a root object to the JSON data
+                string json = "{\"stocks\":" + webRequest.downloadHandler.text + "}";
+
                 // Parse the JSON data
-                var stocksDataWrapper = JsonUtility.FromJson<StocksDataWrapper>(webRequest.downloadHandler.text);
+                var stocksDataWrapper = JsonUtility.FromJson<StocksDataWrapper>(json);
 
                 // Display the data on the Unity canvas
                 foreach (var stock in stocksDataWrapper.stocks)
                 {
-                    if(stock.symbol.ToLower() == _searchInput.text.ToLower())
-                    {
-                        var _stock = Instantiate(_stockPrefab, _stockParent);
-                        _stock.GetComponent<Stock_Data>().SetData
-                            (stock.name,
-                            stock.symbol,
-                            stock.price,
-                            stock.percent_change);
+                    var _stock = Instantiate(_stockPrefab, _stockParent);
+                    _stock.GetComponent<Stock_Data>().SetData
+                        (stock.name,
+                        stock.symbol,
+                        stock.price,
+                        stock.percent_change);
 
-                        _stockList.Add(_stock);
-                    }
-                    //displayText.text += (stock.percent_change).ToString() + "\n";
+                    _stockList.Add(_stock);
                 }
             }
         }
     }
+
 }
 
 [System.Serializable]
